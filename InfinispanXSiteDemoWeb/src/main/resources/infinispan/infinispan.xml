@@ -1,0 +1,80 @@
+<infinispan
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:infinispan:config:5.2 http://www.infinispan.org/schemas/infinispan-config-5.2.xsd"
+        xmlns="urn:infinispan:config:5.2">
+
+    <global>
+
+        <sites local="${jgroups.relay2.site:LON}"/>
+		
+		 <!-- 
+		 <sites local="LON"/>
+		  -->
+		<!--  
+        <transport clusterName="local-cluster" siteId="${site}">
+         -->
+         <transport clusterName="local-cluster" siteId="${jgroups.relay2.site:LON}">
+            <properties>
+            <!-- 
+                <property name="configurationFile" value="/home/bela/xsite2/LON.xml"/>
+            -->
+                <property name="configurationFile" value="infinispan/${jgroups.relay2.site}.xml"/>
+            </properties>
+        </transport>
+
+    </global>
+
+    <default>
+
+        <locking concurrencyLevel="100" lockAcquisitionTimeout="1000"/>
+        <jmxStatistics enabled="true"/>
+        <clustering mode="distribution">
+            <hash numOwners="2"/>
+            <sync/>
+        </clustering>
+
+
+        <sites>
+        	<backups backupSites="${jgroups.relay2.backupSites}">
+                <backup site="NYC" backupFailurePolicy="WARN" strategy="SYNC" timeout="12000">
+                    <takeOffline afterFailures="3" minTimeToWait="10000"/>
+                </backup>
+                <backup site="SFO" backupFailurePolicy="WARN" strategy="SYNC" timeout="12000">
+                    <takeOffline afterFailures="3" minTimeToWait="10000"/>
+                </backup>
+                <backup site="LON" backupFailurePolicy="WARN" strategy="SYNC" timeout="12000">
+                    <takeOffline afterFailures="3" minTimeToWait="10000"/>
+                </backup>
+            </backups>
+        </sites>
+    </default>
+
+    <namedCache name="MyCoolCache">
+		<!-- 
+        <sites>
+            <backups backupSites="${backupSites}">
+                <backup site="NYC" backupFailurePolicy="WARN" strategy="SYNC" timeout="12000"/>
+                <backup site="SFO" backupFailurePolicy="WARN" strategy="SYNC" timeout="12000"/>
+                <backup site="LON" backupFailurePolicy="WARN" strategy="SYNC" timeout="12000"/>
+            </backups>
+        </sites>
+         -->
+
+        <!--   <clustering mode="replication">
+
+          <stateRetrieval
+             timeout="240000"
+             fetchInMemoryState="false"
+             alwaysProvideInMemoryState="false"
+          />
+          <sync replTimeout="20000"/>
+
+       </clustering> -->
+        <clustering mode="distribution">
+            <hash numOwners="2"/>
+            <sync/>
+        </clustering>
+
+    </namedCache>
+
+</infinispan>
