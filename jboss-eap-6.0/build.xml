@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="InfinispanXSiteServerConfiguration" default="createServers"
+	basedir=".">
+	<description>
+		Configures a JBoss EAP6/AS7.1.1 environment for
+		InfinispanXSiteReplication demo.
+	</description>
+	
+	<target name="createServers">
+		<fail unless="jboss.path" />
+
+		<createStandaloneServer jbossLocation="${jboss.path}"
+			serverName="standalone-lon-one" baseServerName="standalone" />
+		<createStandaloneServer jbossLocation="${jboss.path}"
+			serverName="standalone-lon-two" baseServerName="standalone" />
+		<createStandaloneServer jbossLocation="${jboss.path}"
+			serverName="standalone-nyc-one" baseServerName="standalone" />
+		<createStandaloneServer jbossLocation="${jboss.path}"
+			serverName="standalone-nyc-two" baseServerName="standalone" />
+	</target>
+
+	<macrodef name="createStandaloneServer">
+		<attribute name="jbossLocation" />
+		<attribute name="serverName" />
+		<attribute name="baseServerName" />
+		<sequential>
+			<echo>Building @{serverName} JBoss server instance.</echo>
+			<!-- Create a copy of the base server directory. -->
+				<copy todir="@{jbossLocation}/@{serverName}">
+				<fileset dir="@{jbossLocation}/@{baseServerName}" />
+			</copy>
+			<!-- Copy the config file. -->
+			<copy file="./@{serverName}/configuration/standalone-ha.xml"
+				todir="@{jbossLocation}/@{serverName}/configuration" overwrite="true" />
+			<!-- Copy the startup script -->
+			<copy file="./bin/start_@{serverName}.sh" todir="@{jbossLocation}/bin" />
+			<chmod file="@{jbossLocation}/bin/start_@{serverName}.sh" perm="755"/>
+			<echo>Build completed.</echo>
+		</sequential>
+	</macrodef>
+</project>
