@@ -5,6 +5,10 @@
 		Configures a JBoss EAP6/AS7.1.1 environment for
 		InfinispanXSiteReplication demo.
 	</description>
+
+<!-- TODO: We're going to use TicketMaster as our base application.
+	We want to use PostgreSQL as our database, if possible.
+	So, we need to build in an option in this script to install the PostgreSQL drivers as an AS7/EAP6 module. -->
 	
 	<target name="createServers">
 		<fail unless="jboss.path" />
